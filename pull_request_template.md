@@ -2,7 +2,7 @@
 
 <!-- Please include a summary of the change -->
 
-- Summary of change:
+Relevant issues are: 
 
 ## Type of change
 
