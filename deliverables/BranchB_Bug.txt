@@ -1,0 +1,5 @@
+The reasons for the note-deleting bug was:
+- In the frontend, it wasn't waiting for the backend's response before deleting 
+    the note in the frontend's state. Now, if there is an error, it doesn't delete.
+- In the backend, the note wasn't being deleted at all. Now a database delete request
+    is made, and it sends an error if the deletion fails.
