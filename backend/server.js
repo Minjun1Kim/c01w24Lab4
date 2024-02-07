@@ -82,8 +82,17 @@ app.post("/postNote", express.json(), async (req, res) => {
 app.delete("/deleteNote/:noteId", express.json(), async (req, res) => {
   const { noteId } = req.params;
 
-  console.log(`Attempting to delete note with ID: ${noteId}`);
-  res.status(500).json({ error: "Failed to delete note due to internal server error." });
+  try {
+    if (!ObjectId.isValid(noteId)) {
+      return res.status(400).json({ error: "Invalid id!" });
+    }
+    const collection = db.collection(COLLECTIONS.notes);
+    const response = await collection.deleteOne({_id: new ObjectId(noteId)});
+
+    res.json({ response: `Note id: ${noteId} deleted.` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
   
 // Patch a note
