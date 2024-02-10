@@ -5,6 +5,7 @@
 
 # database
 */data
+data/db/**
 
 # misc
 .DS_Store
