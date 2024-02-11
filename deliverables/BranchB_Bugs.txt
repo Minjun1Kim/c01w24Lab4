@@ -1,0 +1,2 @@
+In server.js, deleteNote never attempted to delete the note from the database and instead immediately returned an error status.
+In App.js, deleteNote immediately invokes deleteNoteState rather than awaiting for a response from the server. This is problematic as now the note is no longer visible to the user, but it may still exist in the database if the server failed to delete it.
