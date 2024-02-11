@@ -86,12 +86,6 @@ app.post("/postNote", express.json(), async (req, res) => {
       return res.status(400).json({ error: "Invalid note ID." });
     }
 
-<<<<<<< HEAD
-  console.log(`Attempting to delete note with ID: ${noteId}`);
-  res.status(500).json({ error: "Failed to delete note due to internal server error." });
-});
-
-=======
     // Find note with given ID
     const collection = db.collection(COLLECTIONS.notes);
     const data = await collection.deleteOne({
@@ -109,8 +103,7 @@ app.post("/postNote", express.json(), async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 })
-  
->>>>>>> f3adf59 (Fix deleting a single note bugs in frontend and backend)
+
 // Patch a note
 app.patch("/patchNote/:noteId", express.json(), async (req, res) => {
   try {
