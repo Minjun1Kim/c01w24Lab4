@@ -9,11 +9,11 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [notes, setNotes] = useState(undefined)
 
-  // -- Dialog props-- 
+  // -- Dialog props--
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogNote, setDialogNote] = useState(null)
 
-  
+
   // -- Database interaction functions --
   useEffect(() => {
     const getNotes = async () => {
@@ -25,7 +25,7 @@ function App() {
           } else {
               await response.json().then((data) => {
               getNoteState(data.response)
-          }) 
+          })
           }
         })
       } catch (error) {
@@ -39,23 +39,54 @@ function App() {
   }, [])
 
   const deleteNote = async (entry) => {
-    deleteNoteState(entry._id);
-
     try {
-      const response = await fetch(`http://localhost:4000/deleteNote/${entry._id}`, {
+      await fetch(`http://localhost:4000/deleteNote/${entry._id}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
         },
-      });
-  
-      if (!response.ok) {
-        console.log("Server failed to delete the note:", response.status);
-      }
+      })
+      .then(async (response) => {
+        if (!response.ok) {
+          console.log("Served failed:", response.status)
+          alert("Failed to delete note!")
+        } else {
+            await response.json().then(() => {
+            deleteNoteState(entry._id)
+        })
+        }
+      })
     } catch (error) {
-      console.error("Delete function failed:", error);
+      console.log("Delete function failed:", error)
+      alert("Failed to delete note!")
+    } finally {
+      setLoading(false)
     }
   }
+
+    const onChangeColor = async (noteId, color) => {
+        try {
+            const response = await fetch(`http://localhost:4000/updateNoteColor/${noteId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ color }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update note color');
+            }
+
+            setNotes((prevNotes) =>
+                prevNotes.map((note) =>
+                    note._id === noteId ? { ...note, color: color } : note
+                )
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
   const deleteAllNotes = async () => {
     try {
@@ -72,7 +103,7 @@ function App() {
         } else {
             await response.json().then(() => {
               deleteAllNotesState()
-        }) 
+        })
         }
       })
     } catch (error) {
@@ -83,7 +114,7 @@ function App() {
     }
   }
 
-  
+
   // -- Dialog functions --
   const editNote = (entry) => {
     setDialogNote(entry)
@@ -100,7 +131,7 @@ function App() {
     setDialogOpen(false)
   }
 
-  // -- State modification functions -- 
+  // -- State modification functions --
   const getNoteState = (data) => {
     setNotes(data)
   }
@@ -139,15 +170,16 @@ function App() {
           <div style={AppStyle.notesSection}>
             {loading ?
             <>Loading...</>
-            : 
+            :
             notes ?
             notes.map((entry) => {
               return (
               <div key={entry._id}>
                 <Note
-                entry={entry} 
-                editNote={editNote} 
+                entry={entry}
+                editNote={editNote}
                 deleteNote={deleteNote}
+                onChangeColor={onChangeColor}
                 />
               </div>
               )
@@ -161,7 +193,7 @@ function App() {
           </div>
 
           <button onClick={postNote}>Post Note</button>
-          {notes && notes.length > 0 && 
+          {notes && notes.length > 0 &&
           <button
               onClick={deleteAllNotes}
               >
@@ -187,7 +219,7 @@ export default App;
 
 const AppStyle = {
   dimBackground: {
-    opacity: "20%", 
+    opacity: "20%",
     pointerEvents: "none"
   },
   notesSection: {
@@ -198,7 +230,7 @@ const AppStyle = {
   notesError: {color: "red"},
   title: {
     margin: "0px"
-  }, 
+  },
   text: {
     margin: "0px"
   }
